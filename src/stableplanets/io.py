@@ -66,7 +66,7 @@ class ExoplanetCatalog:
         print("Removing rows with missing values ...")
         import operator
         from functools import reduce
-        self.Catalog = self.Catalog[reduce(operator.and_, [~sel.Catalog[col].mask for col in columns_to_check])]
+        self.Catalog = self.Catalog[reduce(operator.and_, [~self.Catalog[col].mask for col in columns_to_check])]
         self.Catalog.group_by["hostname"]
         print("Removal complete!")
         print("ALERT: There are", len(self.Catalog.groups.keys), "planetary systems found in the supplied data.")
