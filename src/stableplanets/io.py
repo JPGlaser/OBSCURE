@@ -82,7 +82,7 @@ class ExoplanetCatalog:
         self.Parameter_Dict = defaultdict(lambda: defaultdict(dict))
         for system_name, system in zip(self.Catalog.groups.keys.as_array(), self.Catalog.groups):
             system_name = system_name[0] # Odd Formatting Due to How Group Keys Work
-            system_params = Parameter_Dict[system_name]
+            system_params = self.Parameter_Dict[system_name]
             for planet in system:
                 missing_value = False
                 planet_params = system_params[planet['pl_name']]
