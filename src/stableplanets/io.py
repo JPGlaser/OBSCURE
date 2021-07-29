@@ -5,7 +5,7 @@ from astropy.io.votable import parse
 
 
 class ExoplanetCatalog:
-    def __init__(self, OfflineMode = False, path_to_csv = None)
+    def __init__(self, OfflineMode = False, path_to_csv = None):
         self.OfflineMode = OfflineMode
         self.path_to_csv = path_to_csv
         self.Catalog = InitializeCatalog()
