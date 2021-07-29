@@ -9,6 +9,7 @@ class ExoplanetCatalog:
         self.OfflineMode = OfflineMode
         self.path_to_csv = path_to_csv
         self.Catalog = self.InitializeCatalog()
+        self.wasCleaned = False
 
     def InitializeCatalog(self):
         """
@@ -52,7 +53,7 @@ class ExoplanetCatalog:
 
         return grouped_table
 
-#-------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
 
     def clean(self, **kwargs):
         """
@@ -69,6 +70,31 @@ class ExoplanetCatalog:
         self.Catalog = self.Catalog[reduce(operator.and_, [~self.Catalog[col].mask for col in columns_to_check])]
         self.Catalog = self.Catalog.group_by("hostname")
         print("Removal complete!")
+        self.wasCleaned = True
         print("ALERT: There are", len(self.Catalog.groups.keys), "planetary systems found in the supplied data.")
 
-#-------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
+
+    def get_ParameterRanges(self):
+        if not self.wasCleaned:
+            self.clean()
+        from collections import defaultdict
+        self.Parameter_Dict = defaultdict(lambda: defaultdict(dict))
+        for system_name, system in zip(self.Catalog.groups.keys.as_array(), self.Catalog.groups):
+            system_name = system_name[0] # Odd Formatting Due to How Group Keys Work
+            system_params = Parameter_Dict[system_name]
+            for planet in system:
+                missing_value = False
+                planet_params = system_params[planet['pl_name']]
+                for base_param_name in ['pl_orbper', 'pl_bmassj', 'pl_orbeccen']: #, 'pl_orbincl']:
+                    max_param = planet[base_param_name]+planet[base_param_name+'err1']
+                    min_param = planet[base_param_name]+planet[base_param_name+'err2']
+                    planet_params.update({base_param_name : [min_param, max_param]})
+            example_planet = system[0]
+            star_params = system_params[system_name]
+            star_params.update({'st_spectype' : example_planet['st_spectype']})
+            for base_param_name in ['st_mass', 'st_rad', 'st_age']:
+                max_param = planet[base_param_name]+planet[base_param_name+'err1']
+                min_param = planet[base_param_name]+planet[base_param_name+'err2']
+                star_params.update({base_param_name : [min_param, max_param]})
+        return self.Parameter_Dict
