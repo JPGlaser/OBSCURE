@@ -72,7 +72,7 @@ class ExoplanetCatalog:
                     if '--' in [str(planet[base_param_name]), \
                                     str(planet[base_param_name+'err1']), \
                                     str(planet[base_param_name+'err2'])]:
-                        RowsToRemove.append(Astropy_Catalog.loc_indices[planet['pl_name']])
+                        RowsToRemove.append(self.Catalog.loc_indices[planet['pl_name']])
                         missing_value = True
                         break
                     else:
