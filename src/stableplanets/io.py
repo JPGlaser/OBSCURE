@@ -79,7 +79,9 @@ class ExoplanetCatalog:
                         continue
                 if missing_value:
                     break
-        print(RowsToRemove)
+        print("ALERT: There are", len(RowsToRemove), "rows in the Catalog that \
+                      have at least one missing core value. There are now", \
+                      len(self.Catalog), "rows in the Catalog.")
         self.Catalog.remove_rows(RowsToRemove)
 
 #-------------------------------------------------------------------------------
