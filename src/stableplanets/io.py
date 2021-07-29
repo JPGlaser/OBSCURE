@@ -97,4 +97,4 @@ class ExoplanetCatalog:
                 max_param = planet[base_param_name]+planet[base_param_name+'err1']
                 min_param = planet[base_param_name]+planet[base_param_name+'err2']
                 star_params.update({base_param_name : [min_param, max_param]})
-        return self.Parameter_Dict
+        self.Parameter_Dict
