@@ -54,12 +54,13 @@ class ExoplanetCatalog:
 
 #-------------------------------------------------------------------------------
 
-    def clean(self, columns_to_check=self.Catalog.columns):
+    def clean(self, **kwargs):
         """
         This function 'cleans' an Astropy_Catalog created via InitializeCatalog()
         by searching for and then removing any rows where there are missing values
         in any of the key columns.
         """
+        columns_to_check = kwargs.get("columns_to_check", self.Catalog.columns)
         # See here for why this works:
         # https://stackoverflow.com/questions/50256012/drop-rows-with-masked-elements-in-astropy-table
         print("Removing rows with missing values ...")
