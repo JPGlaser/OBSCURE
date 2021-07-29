@@ -8,7 +8,7 @@ class ExoplanetCatalog:
     def __init__(self, OfflineMode = False, path_to_csv = None):
         self.OfflineMode = OfflineMode
         self.path_to_csv = path_to_csv
-        self.Catalog = InitializeCatalog()
+        self.Catalog = self.InitializeCatalog()
 
     def InitializeCatalog(self):
         """
