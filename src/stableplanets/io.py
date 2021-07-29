@@ -54,34 +54,20 @@ class ExoplanetCatalog:
 
 #-------------------------------------------------------------------------------
 
-    def clean(self, base_param_names=None, pos_error_name='err1', neg_error_name='err2'):
+    def clean(self, columns_to_check=self.Catalog.columns):
         """
         This function 'cleans' an Astropy_Catalog created via InitializeCatalog()
         by searching for and then removing any rows where there are missing values
         in any of the key columns.
         """
-        if base_param_names == None:
-            base_param_names = ['st_mass', 'st_rad', 'st_age', 'pl_orbper', 'pl_bmassj', 'pl_orbeccen']
-        self.Catalog.add_index('pl_name')
-        RowsToRemove = []
-        for system_name, system in zip(self.Catalog.groups.keys.as_array(), self.Catalog.groups):
-            system_name = system_name[0] # Odd Formatting Due to How Group Keys Work
-            for planet in system:
-                missing_value = False
-                for base_param_name in base_param_names:
-                    if '--' in [str(planet[base_param_name]), \
-                                    str(planet[base_param_name+'err1']), \
-                                    str(planet[base_param_name+'err2'])]:
-                        RowsToRemove.append(self.Catalog.loc_indices[planet['pl_name']])
-                        missing_value = True
-                        break
-                    else:
-                        continue
-                if missing_value:
-                    break
-        print("ALERT: There are", len(RowsToRemove), "rows in the Catalog that \
-                      have at least one missing core value. There are now", \
-                      len(self.Catalog), "rows in the Catalog.")
-        self.Catalog.remove_rows(RowsToRemove)
+        # See here for why this works:
+        # https://stackoverflow.com/questions/50256012/drop-rows-with-masked-elements-in-astropy-table
+        print("Removing rows with missing values ...")
+        import operator
+        from functools import reduce
+        self.Catalog = self.Catalog[reduce(operator.and_, [~sel.Catalog[col].mask for col in columns_to_check])]
+        self.Catalog.group_by["hostname"]
+        print("Removal complete!")
+        print("ALERT: There are", len(self.Catalog.groups.keys), "planetary systems found in the supplied data.")
 
 #-------------------------------------------------------------------------------
