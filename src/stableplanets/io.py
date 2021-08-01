@@ -86,7 +86,8 @@ class ExoplanetCatalog:
             for planet in system:
                 missing_value = False
                 planet_params = system_params[planet['pl_name']]
-                planet_params['hostname']
+                planet_params.update({'hostname' : planet['hostname']})
+                planet_params.update({'pl_bmassprov' : planet['pl_bmassprov']})
                 for base_param_name in ['pl_orbper', 'pl_bmassj', 'pl_orbeccen']: #, 'pl_orbincl']:
                     max_param = planet[base_param_name]+planet[base_param_name+'err1']
                     min_param = planet[base_param_name]+planet[base_param_name+'err2']
