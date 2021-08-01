@@ -30,7 +30,7 @@ from amuse.units import constants
 from amuse.datamodel import particle_attributes
 from amuse.io import *
 from amuse.lab import *
-from tycho import util
+from stableplanets import util
 
 from amuse.community.kepler.interface import Kepler
 from amuse.community.sse.interface import SSE
