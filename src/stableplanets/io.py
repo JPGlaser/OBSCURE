@@ -2,7 +2,7 @@ import pyvo as vo
 from astropy.table import Table
 import astropy.io.votable
 from astropy.io.votable import parse
-
+import numpy as np
 
 class ExoplanetCatalog:
     def __init__(self, OfflineMode = False, path_to_csv = None):
@@ -113,7 +113,7 @@ class ExoplanetCatalog:
                         min_param = planet[base_param_name]+planet[base_param_name+'err2']
                         planet_params.update({base_param_name : [min_param, max_param]})
                     except:
-                        planet_params.update({base_param_name : [0, 0]})
+                        planet_params.update({base_param_name : [np.nan, np.nan]})
             example_planet = system[0]
             star_params = system_params[system_name]
             star_params.update({'st_spectype' : example_planet['st_spectype']})
