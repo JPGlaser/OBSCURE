@@ -62,7 +62,16 @@ class ExoplanetCatalog:
         by searching for and then removing any rows where there are missing values
         in any of the key columns.
         """
-        columns_to_check = kwargs.get("columns_to_check", self.Catalog.columns)
+        # These default columns that are being checked are those needed for BEM
+        # to accurately estimate the planetary mass of an object. This is key for
+        # secular integration later to take into account tidal forces.
+        default_cols = ['pl_orbper', 'pl_bmassj', 'pl_orbeccen', \
+                        'st_mass', 'st_rad', 'st_age', 'st_teff']
+        error_cols = []
+        for default_col in default_cols:
+            error_cols.extend([default_col+"err1", default_col+"err2"])
+        default_cols.extend(error_cols)
+        columns_to_check = kwargs.get("columns_to_check", default_cols)
         # See here for why this works:
         # https://stackoverflow.com/questions/50256012/drop-rows-with-masked-elements-in-astropy-table
         print("Removing rows with missing values ...")
@@ -90,14 +99,25 @@ class ExoplanetCatalog:
                 planet_params.update({'hostname' : planet['hostname']})
                 planet_params.update({'pl_bmassprov' : planet['pl_bmassprov']})
                 planet_params.update({'tran_flag' : planet['tran_flag']})
+                planet_params.update({'rv_flag' : planet['rv_flag']})
                 for base_param_name in ['pl_orbper', 'pl_bmassj', 'pl_orbeccen']: #, 'pl_orbincl']:
                     max_param = planet[base_param_name]+planet[base_param_name+'err1']
                     min_param = planet[base_param_name]+planet[base_param_name+'err2']
                     planet_params.update({base_param_name : [min_param, max_param]})
+                # For planets with observed Radius and Inclinations, append them.
+                # If they don't have them, set the limits to [0,0] to be estimated
+                # in a later step via BEM and technique limitations.
+                for base_param_name in ['pl_radj', 'pl_orbincl']:
+                    try:
+                        max_param = planet[base_param_name]+planet[base_param_name+'err1']
+                        min_param = planet[base_param_name]+planet[base_param_name+'err2']
+                        planet_params.update({base_param_name : [min_param, max_param]})
+                    except:
+                        planet_params.update({base_param_name : [0, 0]})
             example_planet = system[0]
             star_params = system_params[system_name]
             star_params.update({'st_spectype' : example_planet['st_spectype']})
-            for base_param_name in ['st_mass', 'st_rad', 'st_age']:
+            for base_param_name in ['st_mass', 'st_rad', 'st_age', 'st_teff']:
                 max_param = planet[base_param_name]+planet[base_param_name+'err1']
                 min_param = planet[base_param_name]+planet[base_param_name+'err2']
                 star_params.update({base_param_name : [min_param, max_param]})
